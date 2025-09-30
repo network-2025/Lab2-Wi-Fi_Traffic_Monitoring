@@ -8,12 +8,17 @@ services:
       - mongodb_data:/data/db
     environment:
       - MONGO_INITDB_DATABASE=traffic_monitor
-    networks:
-      - wifi-monitor-net
 
-  wifi-monitor:
+  redis:
+    image: redis:alpine
+    container_name: wifi-monitor-redis
+    ports:
+      - "6379:6379"
+
+  web:
     build: .
     container_name: wifi-monitor-app
+    command: ["python3", "src/web_app.py"]
     volumes:
       - ./src:/app/src
       - ./web:/app/web
@@ -22,20 +27,52 @@ services:
       - ./logs:/app/logs
     environment:
       - MONGODB_URI=mongodb://localhost:27017/
+      - REDIS_URL=redis://localhost:6379/0
       - FLASK_ENV=development
       - TESTING=true
     depends_on:
       - mongodb
-    # For packet capture capabilities
+      - redis
     cap_add:
       - NET_RAW
       - NET_ADMIN
-    # Access to host network interfaces - removes conflicts with networks
+    network_mode: host
+
+  worker:
+    build: .
+    container_name: wifi-monitor-worker
+    command: ["python3", "-m", "celery", "-A", "src.tasks", "worker", "--loglevel=info"]
+    volumes:
+      - ./src:/app/src
+      - ./web:/app/web
+      - ./config:/app/config
+      - ./keys:/app/keys
+      - ./logs:/app/logs
+    environment:
+      - MONGODB_URI=mongodb://localhost:27017/
+      - REDIS_URL=redis://localhost:6379/0
+    depends_on:
+      - mongodb
+      - redis
+    network_mode: host
+
+  beat:
+    build: .
+    container_name: wifi-monitor-beat
+    command: ["python3", "-m", "celery", "-A", "src.tasks", "beat", "--loglevel=info"]
+    volumes:
+      - ./src:/app/src
+      - ./web:/app/web
+      - ./config:/app/config
+      - ./keys:/app/keys
+      - ./logs:/app/logs
+    environment:
+      - MONGODB_URI=mongodb://localhost:27017/
+      - REDIS_URL=redis://localhost:6379/0
+    depends_on:
+      - mongodb
+      - redis
     network_mode: host
 
 volumes:
   mongodb_data:
-
-networks:
-  wifi-monitor-net:
-    driver: bridge
