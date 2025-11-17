@@ -43,13 +43,13 @@ Default credentials:
 - **Security**: JWT, RSA 2048-bit encryption, PBKDF2
 - **Deployment**: Docker, Gunicorn, Nginx
 
-### Documentation
+### Installation & Setup
 
-- [Installation Guide](INSTALLATION.md)
-- [Setup Guide](SETUP_GUIDE.md)
-- [API Documentation](API_DOCUMENTATION.md)
-- [Security Guide](SECURITY_GUIDE.md)
-- [Development Guide](docs/README.md)
+1. **Prerequisites**: Python 3.8+, MongoDB, Docker (optional)
+2. **Install dependencies**: `pip install -r requirements.txt`
+3. **Configure settings**: Edit `config/config.json`
+4. **Run application**: `python src/web_app.py`
+5. **Access dashboard**: http://localhost:5000
 
 ### License
 
@@ -96,13 +96,13 @@ docker-compose up -d
 - **보안**: JWT, RSA 2048비트 암호화, PBKDF2
 - **배포**: Docker, Gunicorn, Nginx
 
-### 문서
+### 설치 및 설정
 
-- [설치 가이드](INSTALLATION.md)
-- [설정 가이드](SETUP_GUIDE.md)
-- [API 문서](API_DOCUMENTATION.md)
-- [보안 가이드](SECURITY_GUIDE.md)
-- [개발 가이드](docs/README.md)
+1. **필수 요구사항**: Python 3.8+, MongoDB, Docker (선택사항)
+2. **종속성 설치**: `pip install -r requirements.txt`
+3. **설정 파일 편집**: `config/config.json` 수정
+4. **애플리케이션 실행**: `python src/web_app.py`
+5. **대시보드 접속**: http://localhost:5000
 
 ### 라이선스
 
