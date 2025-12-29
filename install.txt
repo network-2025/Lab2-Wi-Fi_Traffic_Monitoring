@@ -1,0 +1,28 @@
+git clone git@github.com:network-2025/Lab2-Wi-Fi_Traffic_Monitoring.git
+
+curl -fsSL https://pgp.mongodb.com/server-5.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-5.0.gpg --dearmor
+
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-5.0.gpg ]  https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+
+sudo apt-get update
+
+sudo apt-get install -y python3-pip mongodb nginx hostapd dnsmasq iptables-persistent
+
+sudo apt-get install -y python3-venv
+
+python3 -m venv venv
+
+source venv/bin/activate
+
+pip install -r requirements.txt
+
+sudo systemctl start mongodb
+
+sudo systemctl enable mongodb
+
+python3 src/key_manager.py generate
+
+cat keys/admin_credentials.txt
+
+sudo ./venv/bin/python src/web_app.py
+

@@ -49,6 +49,14 @@ def get_active_interface():
         logger.warning("Could not automatically detect interface. Falling back to config.")
         return None
 
+# Load configuration
+config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.json')
+try:
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+except FileNotFoundError:
+    config = {'capture': {'interface': 'eth0'}}  # Default fallback
+
 # Configuration
 MONGODB_URI = os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('DB_NAME', 'traffic_monitor')
@@ -70,8 +78,9 @@ def init_mongodb():
         db = mongo_client[DB_NAME]
         logger.info("MongoDB connection established")
     except Exception as e:
-        logger.error(f"MongoDB connection failed: {e}")
-        raise
+        logger.warning(f"MongoDB connection failed: {e} - Running without database")
+        mongo_client = None
+        db = None
 
 def init_packet_capture():
     """Initialize packet capture"""
